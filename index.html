@@ -15,10 +15,41 @@
     --text-3: #a8a396;
     --hairline: #eceae2;
     --hairline-2: #e2dfd5;
-    --accent: #b4643c;      /* clay — used sparingly */
+    --accent: #b4643c;
     --accent-soft: #f0e4dc;
     --red: #b0433f;
     --fill: #2c2a24;
+    --fill-text: #faf9f5;
+    --fill-hover: #3a382f;
+    --surface: #f4f2ea;
+    --surface-hover: #f2f0e9;
+    --check-border: #cdc9bc;
+    --scrollbar: #dedbd0;
+    --code-bg: #f0eee7;
+    --sk-start: #f0eee7;
+    --sk-mid: #f6f4ee;
+  }
+  html.dark {
+    --bg: #1c1b18;
+    --text: #e2ddd5;
+    --text-2: #8a857c;
+    --text-3: #5e5a52;
+    --hairline: #2c2a26;
+    --hairline-2: #38362e;
+    --accent: #c0754a;
+    --accent-soft: #3a2215;
+    --red: #cc6360;
+    --fill: #e2ddd5;
+    --fill-text: #1c1b18;
+    --fill-hover: #ede8e0;
+    --surface: #252320;
+    --surface-hover: #2e2c28;
+    --check-border: #4e4c45;
+    --scrollbar: #3c3a34;
+    --code-bg: #2a2820;
+    --sk-start: #252320;
+    --sk-mid: #2e2c28;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-text-size-adjust: 100%; }
@@ -37,7 +68,7 @@
   input, select { font: inherit; color: inherit; letter-spacing: inherit; }
   ::selection { background: var(--accent-soft); }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #dedbd0; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 8px; }
 
   .wrap { max-width: 600px; margin: 0 auto; }
 
@@ -74,9 +105,9 @@
     transition: background 0.15s, border-color 0.15s, color 0.15s;
     display: inline-flex; align-items: center; gap: 6px;
   }
-  .btn:hover { background: #f2f0e9; border-color: #d8d4c8; }
-  .btn.primary { background: var(--fill); border-color: var(--fill); color: #faf9f5; }
-  .btn.primary:hover { background: #3a382f; border-color: #3a382f; }
+  .btn:hover { background: var(--surface-hover); border-color: var(--hairline-2); }
+  .btn.primary { background: var(--fill); border-color: var(--fill); color: var(--fill-text); }
+  .btn.primary:hover { background: var(--fill-hover); border-color: var(--fill-hover); }
   .btn.ghost { border-color: transparent; color: var(--text-3); padding: 7px 8px; }
   .btn.ghost:hover { background: transparent; color: var(--text); }
 
@@ -100,12 +131,12 @@
 
   .check {
     flex-shrink: 0; width: 19px; height: 19px; margin-top: 3px; position: relative;
-    border: 1.5px solid #cdc9bc; border-radius: 50%;
+    border: 1.5px solid var(--check-border); border-radius: 50%;
     background: transparent; transition: border-color 0.15s, background 0.2s;
   }
   .check:hover { border-color: var(--accent); }
   .check svg { position: absolute; inset: 0; width: 19px; height: 19px; }
-  .chk-path { fill: none; stroke: #faf9f5; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 0.3s ease; }
+  .chk-path { fill: none; stroke: var(--bg); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 0.3s ease; }
   .item.done .check { background: var(--fill); border-color: var(--fill); }
   .item.done .chk-path { stroke-dashoffset: 0; }
 
@@ -153,6 +184,17 @@
   .sbadge-blocked     { background: #fee2e2; color: #991b1b; }
   .sbadge-waiting     { background: #fef3c7; color: #92400e; }
 
+  /* snooze */
+  .snooze-opts { display: inline-flex; align-items: center; gap: 3px; }
+  .snooze-label { font-size: 12.5px; color: var(--text-3); margin-right: 3px; }
+  .snooze-sep { color: var(--text-3); font-size: 12px; user-select: none; }
+  .snooze-opt { font-size: 12.5px !important; padding: 5px 8px !important; color: var(--text-3) !important; }
+  .snooze-opt:hover { color: var(--text) !important; background: transparent !important; }
+  .snooze-tag { font-size: 12.5px; color: var(--text-3); cursor: pointer; border: none; background: none; padding: 0; font: inherit; letter-spacing: inherit; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; white-space: nowrap; }
+  .snooze-tag:hover { color: var(--accent); }
+  .item.snoozed .line-text { color: var(--text-3); }
+  .item.snoozed .check { border-color: var(--hairline-2); }
+
   /* note button on gh items */
   .notebtn { flex-shrink: 0; color: var(--text-3); opacity: 0; padding: 2px; margin-top: 3px; transition: opacity 0.15s, color 0.15s; }
   .notebtn.has-note { color: var(--accent); opacity: 1; }
@@ -180,13 +222,14 @@
 
   /* inline editor */
   .item.editing { align-items: stretch; }
-  .editor { flex: 1; display: flex; flex-direction: column; gap: 9px; background: #f4f2ea; border: 1px solid var(--hairline-2); border-radius: 10px; padding: 12px; }
+  .editor { flex: 1; display: flex; flex-direction: column; gap: 9px; background: var(--surface); border: 1px solid var(--hairline-2); border-radius: 10px; padding: 12px; }
   .editor input, .editor select, .editor textarea { background: var(--bg); border: 1px solid var(--hairline-2); border-radius: 7px; padding: 8px 10px; font-size: 14.5px; color: var(--text); transition: border-color 0.15s; }
   .editor input:focus, .editor select:focus, .editor textarea:focus { outline: none; border-color: var(--accent); }
   .ed-text { font-weight: 500; }
   .ed-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .ed-row select, .ed-row input { flex: 1; min-width: 130px; font-size: 13.5px; cursor: pointer; }
   .ed-due { color-scheme: light; }
+  html.dark .ed-due { color-scheme: dark; }
   .ed-labels { display: flex; flex-direction: column; gap: 8px; }
   .ed-labels .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .ed-label-input { max-width: 220px; font-size: 13.5px; }
@@ -194,7 +237,7 @@
   .ed-notes { resize: none; min-height: 54px; line-height: 1.55; font-family: inherit; }
   .editor-actions { display: flex; align-items: center; gap: 8px; }
   .editor-actions .del-task { margin-left: auto; color: var(--red); }
-  .editor-actions .del-task:hover { background: #f6e7e5; border-color: #e6c9c6; }
+  .editor-actions .del-task:hover { background: var(--accent-soft); border-color: var(--hairline-2); }
 
   /* add line */
   .add { display: flex; align-items: center; gap: 13px; padding: 12px 0 4px; }
@@ -205,6 +248,7 @@
   .add-prio, .add-date { background: transparent; border: none; color: var(--text-3); font-size: 13px; cursor: pointer; }
   .add-prio:focus, .add-date:focus { outline: none; color: var(--text); }
   .add-date { color-scheme: light; }
+  html.dark .add-date { color-scheme: dark; }
 
   /* browse */
   .browse { margin-top: 48px; }
@@ -225,7 +269,7 @@
   .footnote { margin-top: 44px; font-size: 12px; color: var(--text-3); line-height: 1.6; }
 
   /* skeleton */
-  .sk { background: linear-gradient(90deg, #f0eee7 25%, #f6f4ee 50%, #f0eee7 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: 4px; height: 15px; }
+  .sk { background: linear-gradient(90deg, var(--sk-start) 25%, var(--sk-mid) 50%, var(--sk-start) 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: 4px; height: 15px; }
   @keyframes shimmer { to { background-position: -200% 0; } }
 
   /* setup */
@@ -246,9 +290,46 @@
   .howto h3 { font-size: 12.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 10px; }
   .howto ol { margin-left: 18px; display: flex; flex-direction: column; gap: 4px; }
   .howto a { color: var(--accent); }
-  .howto code { background: #f0eee7; padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+  .howto code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
   .howto .priv { margin-top: 16px; font-size: 12.5px; color: var(--text-3); display: flex; gap: 7px; }
   .howto .priv svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 3px; }
+
+  /* dark mode chip overrides */
+  html.dark .kchip-review { background: #3d2a08; color: #d4a060; }
+  html.dark .kchip-pr     { background: #0a2e18; color: #4ade80; }
+  html.dark .kchip-issue  { background: #0a1e3d; color: #60a0f8; }
+  html.dark .kchip-draft  { background: #2a2a2c; color: #9098a8; }
+  html.dark .sbadge-in-progress { background: #0a1e3d; color: #60a0f8; }
+  html.dark .sbadge-blocked     { background: #3a0d0d; color: #f87060; }
+  html.dark .sbadge-waiting     { background: #3d2a08; color: #d4a060; }
+
+  /* keyboard focus */
+  .item.kb-focus { background: var(--accent-soft); border-radius: 6px; margin: 0 -10px; padding: 10px 10px; }
+  .item.kb-focus + .item { border-top: none; }
+
+  /* repo filter chip */
+  .repo-chip-active { font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); border: none; cursor: pointer; letter-spacing: inherit; transition: opacity 0.15s; }
+  .repo-chip-active:hover { opacity: 0.7; }
+  .repo-link { font-size: 13px; color: var(--text-3); background: none; border: none; padding: 0; font: inherit; letter-spacing: inherit; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; }
+  .repo-link:hover { color: var(--accent); }
+
+  /* repeat indicator */
+  .repeat-icon { font-size: 10px; color: var(--text-3); margin-left: 5px; vertical-align: middle; opacity: 0.7; }
+
+  /* standup copy button */
+  .sh-copy { flex-shrink: 0; color: var(--text-3); opacity: 0; padding: 2px; transition: opacity 0.15s, color 0.15s; }
+  .starthere:hover .sh-copy { opacity: 1; }
+  .sh-copy:hover { color: var(--accent); }
+  .sh-copy svg { width: 14px; height: 14px; }
+  .sh-copy.copied { color: var(--accent) !important; opacity: 1 !important; }
+
+  /* done today section */
+  .done-today-wrap { margin-top: 36px; }
+
+  /* keyboard help overlay */
+  .kb-help { position: fixed; bottom: 24px; right: 24px; background: var(--fill); color: var(--fill-text); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; line-height: 2; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,0.2); display: none; }
+  .kb-help.show { display: block; }
+  .kb-help kbd { font-family: inherit; background: rgba(128,128,128,0.25); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
 
   .hidden { display: none !important; }
 
@@ -307,6 +388,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M3.5 9a9 9 0 0114.9-3.4L23 10"/><path d="M1 20v-6h6"/><path d="M20.5 15A9 9 0 015.6 18.4L1 14"/></svg>
           <span id="refreshText">refresh</span>
         </a>
+        <button class="lnk" id="themeToggle" title="Dark mode"></button>
         <span class="who" id="who"><img id="avatar" alt="" /><span id="uname"></span></span>
         <a class="lnk" id="signout" href="#">sign out</a>
       </div>
@@ -317,7 +399,7 @@
 
     <div id="startWrap"></div>
 
-    <div class="h-list"><h2>Today</h2><span class="tally" id="tally"></span></div>
+    <div class="h-list"><h2>Today</h2><span id="repoChip"></span><span class="tally" id="tally"></span></div>
     <div class="list" id="list"></div>
 
     <div class="add">
@@ -331,11 +413,21 @@
       <input class="add-date" id="addDate" type="date" title="due date (optional)" />
     </div>
 
+    <div id="doneToday"></div>
     <div class="browse" id="browse"></div>
 
     <div class="footnote">Saved on this device. Ticking a GitHub line crosses it off here only — it doesn't change anything on GitHub.</div>
   </div>
 
+</div>
+<div class="kb-help" id="kbHelp">
+  <kbd>j</kbd> / <kbd>k</kbd> — move down / up<br>
+  <kbd>d</kbd> — mark done<br>
+  <kbd>s</kbd> — snooze later today<br>
+  <kbd>o</kbd> — open on GitHub<br>
+  <kbd>r</kbd> — refresh<br>
+  <kbd>n</kbd> — new task<br>
+  <kbd>?</kbd> — close this
 </div>
 
 <script>
@@ -357,11 +449,13 @@ const store = (() => {
 const state = {
   token: null, demo: false, user: null,
   data: { review: [], assigned: [], created: [], involved: [] },
-  tasks: [], handled: new Set(), skipped: new Set(),
+  tasks: [], handled: new Set(), snoozed: new Map(), handledAt: new Map(),
   editingId: null, ghNoteEditingId: null,
   ghNotes: {},
+  kbFocusId: null, repoFilter: null,
   lastFetch: null, loading: false,
 };
+applyTheme();
 
 const BUCKETS = [
   { key: 'assigned', label: 'Assigned to me', q: 'is:open is:issue assignee:@me' },
@@ -409,13 +503,14 @@ function enterApp() {
   const now = new Date();
   $('dateBig').innerHTML = now.toLocaleDateString(undefined, { weekday: 'long' }) + '<small>' + now.toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) + '</small>';
   if (state.user) { $('avatar').src = state.user.avatar_url || ''; $('uname').textContent = state.user.login || 'you'; }
+  updateThemeIcon();
   renderAll();
 }
 function disconnect() {
   store.del('t_token');
   state.token = null; state.user = null; state.demo = false;
   state.data = { review: [], assigned: [], created: [], involved: [] };
-  state.handled = new Set(); state.skipped = new Set();
+  state.handled = new Set(); state.snoozed = new Map();
   $('app').classList.add('hidden'); $('setup').classList.remove('hidden');
   $('tokenInput').value = ''; $('connectBtn').disabled = false; hideErr();
 }
@@ -465,11 +560,13 @@ function buildEntries() {
   ['review','assigned','created','involved'].forEach(key => (state.data[key]||[]).forEach(it => {
     const ex = map.get(it.id); if (ex) ex.sources.add(key); else map.set(it.id, { item: it, sources: new Set([key]) });
   }));
-  const gh = [...map.values()].map(({ item, sources }) => ({ type:'gh', id:'gh-'+item.id, item, sources, score: scoreItem(item, sources), done: state.handled.has(item.id) }));
+  const ghAll = [...map.values()];
+  const ghFiltered = state.repoFilter ? ghAll.filter(({item}) => repoOf(item) === state.repoFilter) : ghAll;
+  const gh = ghFiltered.map(({ item, sources }) => ({ type:'gh', id:'gh-'+item.id, item, sources, score: scoreItem(item, sources), done: state.handled.has(item.id) }));
   const tasks = state.tasks.map(t => ({ type:'task', id:t.id, task:t, score: scoreTask(t), done: t.done }));
   const actionable = [...gh, ...tasks].filter(e => e.type === 'task' ? true : (e.sources.has('review') || e.sources.has('assigned') || hasHot(e.item)));
   actionable.sort((a,b) => (a.done - b.done) || (b.score - a.score));
-  return actionable;
+  return actionable.map(e => ({ ...e, snoozed: isSnoozed(e.id), snoozeUntil: state.snoozed.get(e.id) }));
 }
 function phrase(e) {
   if (e.type === 'task') { const t=e.task, over=t.due && Math.ceil((new Date(t.due+'T23:59:59')-Date.now())/86400000)<0; return { verb: over?'Finish':'Do', text:t.text, isTask:true }; }
@@ -490,7 +587,7 @@ function reasonFor(e) {
 }
 
 /* ---------- render ---------- */
-function renderAll() { renderCoach(); renderStart(); renderList(); renderBrowse(); renderTally(); }
+function renderAll() { renderCoach(); renderStart(); renderList(); renderDoneToday(); renderBrowse(); renderTally(); renderRepoFilter(); }
 
 function renderCoach() {
   const d = state.data;
@@ -514,11 +611,11 @@ function renderCoach() {
 
 function renderStart() {
   const entries = buildEntries();
-  const next = entries.find(e => !e.done && !state.skipped.has(e.id));
+  const next = entries.find(e => !e.done && !e.snoozed);
   const wrap = $('startWrap');
   if (!next) {
     const anyOpen = entries.some(e => !e.done);
-    wrap.innerHTML = `<div class="all-clear">${ICON.check}<span>${anyOpen ? "That's all you skipped — nothing else calling for you." : "Everything's crossed off. Nice work."}</span></div>`;
+    wrap.innerHTML = `<div class="all-clear">${ICON.check}<span>${anyOpen ? "Everything's snoozed — check back later." : "Everything's crossed off. Nice work."}</span></div>`;
     return;
   }
   const p = phrase(next), reason = reasonFor(next);
@@ -534,13 +631,33 @@ function renderStart() {
       <div class="sh-actions">
         ${open}
         <button class="btn primary" data-act="done" data-id="${next.id}">Done</button>
-        <button class="btn ghost" data-act="skip" data-id="${next.id}">skip →</button>
+        <button class="btn ghost sh-copy" id="shCopy" title="Copy for standup">${ICON.copy}</button>
+        <span class="snooze-opts">
+          <span class="snooze-label">snooze:</span>
+          <button class="btn ghost snooze-opt" data-act="snooze" data-dur="4h" data-id="${next.id}">later</button>
+          <span class="snooze-sep">·</span>
+          <button class="btn ghost snooze-opt" data-act="snooze" data-dur="1d" data-id="${next.id}">tomorrow</button>
+          <span class="snooze-sep">·</span>
+          <button class="btn ghost snooze-opt" data-act="snooze" data-dur="7d" data-id="${next.id}">next week</button>
+        </span>
       </div>
     </div>`;
   wrap.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
     if (b.dataset.act === 'done') markDone(b.dataset.id);
-    else { state.skipped.add(b.dataset.id); renderStart(); }
+    else if (b.dataset.act === 'snooze') snoozeEntry(b.dataset.id, b.dataset.dur);
   }));
+  const shCopyBtn = $('shCopy');
+  if (shCopyBtn) {
+    shCopyBtn.addEventListener('click', () => {
+      const text = p.isTask
+        ? `Working on: ${p.text}`
+        : `Working on: ${next.item.title} #${next.item.number} — ${repoOf(next.item)}`;
+      navigator.clipboard.writeText(text).then(() => {
+        shCopyBtn.classList.add('copied');
+        setTimeout(() => shCopyBtn.classList.remove('copied'), 1500);
+      }).catch(() => {});
+    });
+  }
 }
 
 function renderList() {
@@ -553,7 +670,8 @@ function renderList() {
     if (e.type === 'task') {
       const t = e.task;
       const dot = t.prio === 'high' ? '<span class="dot high"></span>' : t.prio === 'med' ? '<span class="dot med"></span>' : '';
-      text = `<span class="line-text tasktext" data-edit="${e.id}" title="Click to edit">${dot}${esc(t.text)}</span>`;
+      const repeatMark = t.repeat ? `<span class="repeat-icon" title="${t.repeat === 'daily' ? 'Repeats daily' : 'Repeats weekly'}">↻</span>` : '';
+      text = `<span class="line-text tasktext" data-edit="${e.id}" title="Click to edit">${dot}${esc(t.text)}${repeatMark}</span>`;
       const parts = [];
       if (t.status && t.status !== 'todo') {
         const sLabel = t.status === 'in-progress' ? 'In Progress' : t.status.charAt(0).toUpperCase() + t.status.slice(1);
@@ -565,7 +683,8 @@ function renderList() {
         parts.push(`<span class="due-tag ${over||today?'warn':''}">${over?'overdue':today?'due today':'due '+fmtDate(t.due)}</span>`);
       }
       (t.labels || []).forEach(l => { const c = labelColor(l); parts.push(`<span class="chip" style="background:${c.bg};color:${c.fg}">${esc(l)}</span>`); });
-      sub = parts.length ? `<div class="sub">${parts.join('')}</div>` : '';
+      const snoozeTagTask = e.snoozed ? `<button class="snooze-tag" data-unsnooze="${e.id}">snoozed until ${fmtSnooze(e.snoozeUntil)} · undo</button>` : '';
+      sub = (parts.length || snoozeTagTask) ? `<div class="sub">${parts.join('')}${snoozeTagTask}</div>` : '';
       if (t.notes && t.notes.trim()) {
         const preview = t.notes.trim().replace(/\n/g, ' ').slice(0, 90);
         noteLine = `<span class="note">${esc(preview)}${t.notes.trim().length > 90 ? '…' : ''}</span>`;
@@ -580,7 +699,9 @@ function renderList() {
       } else { kCls = 'kchip-issue'; kLabel = 'Issue'; }
       text = `<span class="line-text"><span class="kchip ${kCls}">${kLabel}</span><a href="${it.html_url}" target="_blank" rel="noopener">${esc(it.title)}</a> <span class="num">#${it.number}</span></span>`;
       const r = reasonFor(e);
-      sub = `<div class="sub"><span class="due-tag">${esc(repoOf(it))}${r ? ' — ' + esc(r) : ''}</span></div>`;
+      const repo = repoOf(it);
+      const snoozeTagGh = e.snoozed ? `<button class="snooze-tag" data-unsnooze="${e.id}">snoozed until ${fmtSnooze(e.snoozeUntil)} · undo</button>` : '';
+      sub = `<div class="sub"><button class="repo-link" data-repo="${esc(repo)}">${esc(repo)}</button>${r ? `<span class="due-tag"> — ${esc(r)}</span>` : ''}${snoozeTagGh}</div>`;
       const ghNote = state.ghNotes[e.id] || '';
       if (e.id === state.ghNoteEditingId) {
         noteLine = `<div class="gh-note-area"><textarea placeholder="Add a personal note…" rows="2">${esc(ghNote)}</textarea><div class="note-row"><button class="btn" data-note-save="${e.id}">Save</button>${ghNote ? `<button class="btn ghost clear" data-note-clear="${e.id}">Clear</button>` : ''}<button class="btn ghost" data-note-cancel>Cancel</button></div></div>`;
@@ -591,7 +712,7 @@ function renderList() {
     const tools = e.type === 'task'
       ? `<div class="rowtools"><button class="editbtn" data-edit="${e.id}" title="Edit">${ICON.edit}</button><button class="del" data-del="${e.id}" title="Remove">${ICON.x}</button></div>`
       : `<div class="rowtools"><button class="notebtn${(state.ghNotes[e.id] || e.id === state.ghNoteEditingId) ? ' has-note' : ''}" data-note-toggle="${e.id}" title="${state.ghNotes[e.id] ? 'Edit note' : 'Add note'}">${ICON.note}</button></div>`;
-    return `<div class="item ${e.done ? 'done' : ''}">
+    return `<div class="item ${e.done ? 'done' : e.snoozed ? 'snoozed' : e.id === state.kbFocusId ? 'kb-focus' : ''}" data-entry-id="${e.id}">
       <button class="check" data-id="${e.id}" title="cross off"><svg viewBox="0 0 19 19"><path class="chk-path" d="M4.5 9.8 L8 13 L14.5 5.5"/></svg></button>
       <div class="line">${text}${sub}${noteLine}</div>
       ${tools}
@@ -615,6 +736,12 @@ function renderList() {
     state.ghNoteEditingId = null; saveGhNotes(); renderList();
   }));
   el.querySelectorAll('[data-note-cancel]').forEach(b => b.addEventListener('click', () => { state.ghNoteEditingId = null; renderList(); }));
+  el.querySelectorAll('[data-unsnooze]').forEach(b => b.addEventListener('click', () => {
+    state.snoozed.delete(b.dataset.unsnooze); saveSnoozed(); renderAll();
+  }));
+  el.querySelectorAll('.repo-link').forEach(b => b.addEventListener('click', () => {
+    state.repoFilter = b.dataset.repo; state.kbFocusId = null; renderAll();
+  }));
   if (state.editingId) wireEditor();
 }
 
@@ -637,6 +764,11 @@ function editorHTML(t) {
           <option value="low"${t.prio==='low'?' selected':''}>Low priority</option>
         </select>
         <input class="ed-due" type="date" value="${t.due||''}" title="Due date" />
+        <select class="ed-repeat">
+          <option value=""${!t.repeat?' selected':''}>No repeat</option>
+          <option value="daily"${t.repeat==='daily'?' selected':''}>Daily</option>
+          <option value="weekly"${t.repeat==='weekly'?' selected':''}>Weekly</option>
+        </select>
       </div>
       <div class="ed-labels">
         <div class="chips" id="edChips"></div>
@@ -663,6 +795,7 @@ function wireEditor() {
   root.querySelector('.ed-status').addEventListener('change', e => { t.status = e.target.value; saveTasks(); });
   root.querySelector('.ed-prio').addEventListener('change', e => { t.prio = e.target.value; saveTasks(); });
   root.querySelector('.ed-due').addEventListener('change', e => { t.due = e.target.value || null; saveTasks(); });
+  root.querySelector('.ed-repeat').addEventListener('change', e => { t.repeat = e.target.value || null; saveTasks(); });
   notes.addEventListener('input', () => { t.notes = notes.value; saveTasks(); autoGrow(notes); });
   labelInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
@@ -714,18 +847,30 @@ function renderSkeleton() {
 
 /* ---------- actions ---------- */
 function toggle(id) {
-  if (id.startsWith('gh-')) { const g = Number(id.slice(3)); state.handled.has(g) ? state.handled.delete(g) : state.handled.add(g); saveHandled(); }
-  else { const t = state.tasks.find(t=>t.id===id); if (t) t.done = !t.done; saveTasks(); }
+  if (id.startsWith('gh-')) {
+    const g = Number(id.slice(3));
+    if (state.handled.has(g)) { state.handled.delete(g); state.handledAt.delete(id); }
+    else { state.handled.add(g); state.handledAt.set(id, Date.now()); }
+    saveHandled(); saveHandledAt();
+  } else {
+    const t = state.tasks.find(t=>t.id===id);
+    if (t) {
+      t.done = !t.done;
+      if (t.done) { t.doneAt = nowISO(); if (t.repeat) scheduleRepeat(t); }
+      else delete t.doneAt;
+      saveTasks();
+    }
+  }
   renderAll();
 }
 function markDone(id) {
-  if (id.startsWith('gh-')) state.handled.add(Number(id.slice(3)));
-  else { const t = state.tasks.find(t=>t.id===id); if (t) t.done = true; }
-  state.skipped.delete(id); saveHandled(); saveTasks(); renderAll();
+  if (id.startsWith('gh-')) { state.handled.add(Number(id.slice(3))); state.handledAt.set(id, Date.now()); saveHandledAt(); }
+  else { const t = state.tasks.find(t=>t.id===id); if (t) { t.done = true; t.doneAt = nowISO(); if (t.repeat) scheduleRepeat(t); } }
+  state.snoozed.delete(id); saveSnoozed(); saveHandled(); saveTasks(); renderAll();
 }
 function addTask() {
   const inp = $('addInput'); const text = inp.value.trim(); if (!text) return;
-  state.tasks.unshift({ id:'task-'+genId(), text, prio: $('addPrio').value, due: $('addDate').value || null, labels: [], notes: '', status: 'todo', done:false, created: nowISO() });
+  state.tasks.unshift({ id:'task-'+genId(), text, prio: $('addPrio').value, due: $('addDate').value || null, labels: [], notes: '', status: 'todo', done:false, repeat: null, created: nowISO() });
   inp.value = ''; $('addDate').value = ''; saveTasks(); renderAll();
 }
 function deleteTask(id) { state.tasks = state.tasks.filter(t=>t.id!==id); if (state.editingId === id) state.editingId = null; saveTasks(); renderAll(); }
@@ -735,12 +880,146 @@ function loadLocal() {
   try { state.tasks = JSON.parse(store.get('t_tasks') || '[]'); } catch { state.tasks = []; }
   try { state.handled = new Set(JSON.parse(store.get('t_handled') || '[]')); } catch { state.handled = new Set(); }
   try { state.ghNotes = JSON.parse(store.get('t_ghnotes') || '{}'); } catch { state.ghNotes = {}; }
+  loadSnoozed(); loadHandledAt();
 }
 function saveTasks() { store.set('t_tasks', JSON.stringify(state.tasks)); }
 function saveHandled() { store.set('t_handled', JSON.stringify([...state.handled])); }
 function saveGhNotes() { store.set('t_ghnotes', JSON.stringify(state.ghNotes)); }
+function saveSnoozed() { store.set('t_snoozed', JSON.stringify([...state.snoozed])); }
+function loadSnoozed() { try { state.snoozed = new Map(JSON.parse(store.get('t_snoozed') || '[]')); } catch { state.snoozed = new Map(); } }
+function saveHandledAt() { store.set('t_handledat', JSON.stringify([...state.handledAt])); }
+function loadHandledAt() { try { state.handledAt = new Map(JSON.parse(store.get('t_handledat') || '[]')); } catch { state.handledAt = new Map(); } }
 
 /* ---------- helpers ---------- */
+/* ---------- snooze helpers ---------- */
+function isSnoozed(id) {
+  if (!state.snoozed.has(id)) return false;
+  const exp = state.snoozed.get(id);
+  if (Date.now() >= exp) { state.snoozed.delete(id); saveSnoozed(); return false; }
+  return true;
+}
+function snoozeMs(dur) {
+  const now = new Date();
+  if (dur === '4h') return Date.now() + 4 * 3600000;
+  if (dur === '1d') { const d = new Date(now); d.setDate(d.getDate() + 1); d.setHours(8, 0, 0, 0); return d.getTime(); }
+  if (dur === '7d') { const d = new Date(now); d.setDate(d.getDate() + 7); d.setHours(8, 0, 0, 0); return d.getTime(); }
+  return Date.now() + 4 * 3600000;
+}
+function snoozeEntry(id, dur) { state.snoozed.set(id, snoozeMs(dur)); saveSnoozed(); renderAll(); }
+function fmtSnooze(ts) {
+  if (!ts) return '';
+  const diff = ts - Date.now();
+  if (diff < 12 * 3600000) return 'later today';
+  if (diff < 36 * 3600000) return 'tomorrow';
+  return 'next week';
+}
+
+/* ---------- theme ---------- */
+function applyTheme() {
+  const saved = store.get('t_theme');
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.classList.toggle('dark', saved === 'dark' || (saved !== 'light' && sysDark));
+}
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  store.set('t_theme', isDark ? 'light' : 'dark');
+  applyTheme(); updateThemeIcon();
+}
+function updateThemeIcon() {
+  const btn = $('themeToggle'); if (!btn) return;
+  const isDark = document.documentElement.classList.contains('dark');
+  btn.innerHTML = isDark ? ICON.sun : ICON.moon;
+  btn.title = isDark ? 'Light mode' : 'Dark mode';
+}
+
+/* ---------- repeat ---------- */
+function scheduleRepeat(task) {
+  const next = Object.assign({}, task, { id: 'task-'+genId(), done: false, created: nowISO() });
+  delete next.doneAt;
+  if (next.due) {
+    const d = new Date(next.due + 'T00:00:00');
+    if (task.repeat === 'daily') d.setDate(d.getDate() + 1);
+    else if (task.repeat === 'weekly') d.setDate(d.getDate() + 7);
+    next.due = d.toISOString().slice(0, 10);
+  }
+  state.tasks.unshift(next);
+}
+
+/* ---------- done today ---------- */
+function renderDoneToday() {
+  const el = $('doneToday'); if (!el) return;
+  const cutoff = Date.now() - 24 * 3600000;
+  const doneTasks = state.tasks.filter(t => t.done && t.doneAt && new Date(t.doneAt).getTime() > cutoff);
+  const doneGh = [...state.handledAt.entries()]
+    .filter(([, ts]) => ts > cutoff)
+    .map(([id]) => {
+      const numId = Number(String(id).replace('gh-', ''));
+      const item = Object.values(state.data).flat().find(i => i.id === numId);
+      return item ? { item } : null;
+    }).filter(Boolean);
+  const total = doneTasks.length + doneGh.length;
+  if (!total) { el.innerHTML = ''; return; }
+  const rows = [
+    ...doneTasks.map(t => `<div class="sub-row">${esc(t.text)}</div>`),
+    ...doneGh.map(({ item }) => `<div class="sub-row"><a href="${item.html_url}" target="_blank" rel="noopener">${esc(item.title)}</a> <span class="num">#${item.number}</span><span class="r">${esc(repoOf(item))}</span></div>`),
+  ].join('');
+  el.innerHTML = `<div class="done-today-wrap"><details class="sect"><summary><span class="caret">›</span> Done today <span class="s-count">${total}</span></summary><div class="sub-list">${rows}</div></details></div>`;
+}
+
+/* ---------- repo filter ---------- */
+function renderRepoFilter() {
+  const el = $('repoChip'); if (!el) return;
+  if (!state.repoFilter) { el.innerHTML = ''; return; }
+  el.innerHTML = `<button class="repo-chip-active" id="clearRepoFilter">× ${esc(state.repoFilter)}</button>`;
+  $('clearRepoFilter').addEventListener('click', () => { state.repoFilter = null; state.kbFocusId = null; renderAll(); });
+}
+
+/* ---------- keyboard shortcuts ---------- */
+document.addEventListener('keydown', e => {
+  if ($('app').classList.contains('hidden')) return;
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const entries = buildEntries();
+  const nav = entries.filter(x => !x.done);
+  if (e.key === 'n') { e.preventDefault(); $('addInput').focus(); return; }
+  if (e.key === 'r') { e.preventDefault(); if (!state.demo) refresh(); return; }
+  if (e.key === '?') {
+    e.preventDefault();
+    const h = $('kbHelp'); if (h) h.classList.toggle('show');
+    return;
+  }
+  if (e.key === 'j' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const idx = state.kbFocusId ? nav.findIndex(x => x.id === state.kbFocusId) : -1;
+    const next = nav[Math.min(idx + 1, nav.length - 1)];
+    state.kbFocusId = next ? next.id : null;
+    renderList(); scrollToKbFocus(); return;
+  }
+  if (e.key === 'k' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const idx = state.kbFocusId ? nav.findIndex(x => x.id === state.kbFocusId) : nav.length;
+    const prev = nav[Math.max(idx - 1, 0)];
+    state.kbFocusId = prev ? prev.id : null;
+    renderList(); scrollToKbFocus(); return;
+  }
+  if (e.key === 'Escape') {
+    state.kbFocusId = null;
+    const h = $('kbHelp'); if (h) h.classList.remove('show');
+    renderList(); return;
+  }
+  const focused = state.kbFocusId ? entries.find(x => x.id === state.kbFocusId) : entries.find(x => !x.done && !x.snoozed);
+  if (!focused) return;
+  if (e.key === 'd') { e.preventDefault(); markDone(focused.id); state.kbFocusId = null; return; }
+  if (e.key === 's') { e.preventDefault(); snoozeEntry(focused.id, '4h'); return; }
+  if (e.key === 'o' && focused.type === 'gh') { e.preventDefault(); window.open(focused.item.html_url, '_blank'); return; }
+});
+function scrollToKbFocus() {
+  if (!state.kbFocusId) return;
+  const el = document.querySelector(`[data-entry-id="${state.kbFocusId}"]`);
+  if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function repoOf(it){ const m=(it.repository_url||'').match(/repos\/(.+)$/); return m?m[1]:''; }
 function nowISO(){ try { return new Date().toISOString(); } catch { return ''; } }
@@ -753,6 +1032,9 @@ const ICON = {
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
   note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="13" y2="17"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>',
+  sun:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
 };
 
 /* consistent muted colour per label name */
@@ -806,6 +1088,7 @@ $('demoLink').addEventListener('click', e => { e.preventDefault(); loadDemo(); }
 $('refreshLink').addEventListener('click', e => { e.preventDefault(); if (!state.demo) refresh(); });
 $('signout').addEventListener('click', e => { e.preventDefault(); disconnect(); });
 $('addInput').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+$('themeToggle').addEventListener('click', toggleTheme);
 $('setupDate').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
 
 (function boot(){
