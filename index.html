@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf9f5;
+    --text: #26241f;
+    --text-2: #78746b;
+    --text-3: #a8a396;
+    --hairline: #eceae2;
+    --hairline-2: #e2dfd5;
+    --accent: #b4643c;      /* clay — used sparingly */
+    --accent-soft: #f0e4dc;
+    --red: #b0433f;
+    --fill: #2c2a24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15.5px;
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    padding: 64px 24px 120px;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; letter-spacing: inherit; }
+  input, select { font: inherit; color: inherit; letter-spacing: inherit; }
+  ::selection { background: var(--accent-soft); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #dedbd0; border-radius: 8px; }
+
+  .wrap { max-width: 600px; margin: 0 auto; }
+
+  /* header */
+  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 44px; }
+  .date { font-size: 15px; font-weight: 500; color: var(--text); }
+  .date small { color: var(--text-3); font-weight: 400; margin-left: 8px; }
+  .tools { display: flex; align-items: center; gap: 16px; font-size: 13px; }
+  .lnk { color: var(--text-3); transition: color 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .lnk:hover { color: var(--text); }
+  .lnk svg { width: 13px; height: 13px; }
+  .who { display: flex; align-items: center; gap: 6px; color: var(--text-2); }
+  .who img { width: 20px; height: 20px; border-radius: 50%; }
+  .refreshing svg { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* greeting + coach */
+  .greet { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .coach { font-size: 15px; color: var(--text-2); margin-top: 5px; max-width: 52ch; }
+  .coach b { color: var(--text); font-weight: 600; }
+
+  /* start here */
+  .starthere { margin: 34px 0 6px; padding-left: 16px; border-left: 2px solid var(--accent); }
+  .sh-label { font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
+  .sh-title { font-size: 17.5px; font-weight: 500; line-height: 1.35; letter-spacing: -0.015em; }
+  .sh-title a:hover { color: var(--accent); }
+  .sh-title .num { color: var(--text-3); font-weight: 400; }
+  .sh-reason { font-size: 14px; color: var(--text-2); margin-top: 4px; }
+  .sh-actions { display: flex; align-items: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+  .btn {
+    font-size: 13.5px; font-weight: 500; padding: 7px 14px; border-radius: 8px;
+    border: 1px solid var(--hairline-2); color: var(--text); background: transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { background: #f2f0e9; border-color: #d8d4c8; }
+  .btn.primary { background: var(--fill); border-color: var(--fill); color: #faf9f5; }
+  .btn.primary:hover { background: #3a382f; border-color: #3a382f; }
+  .btn.ghost { border-color: transparent; color: var(--text-3); padding: 7px 8px; }
+  .btn.ghost:hover { background: transparent; color: var(--text); }
+
+  .all-clear { margin: 30px 0 10px; font-size: 15.5px; color: var(--text-2); display: flex; align-items: center; gap: 10px; }
+  .all-clear svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+
+  /* list heading */
+  .h-list { display: flex; align-items: baseline; gap: 10px; margin: 42px 0 4px; }
+  .h-list h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+  .tally { font-size: 12.5px; color: var(--text-3); }
+
+  /* list */
+  .list { margin-top: 6px; }
+  .item {
+    display: flex; align-items: flex-start; gap: 13px; padding: 10px 0;
+    border-bottom: 1px solid var(--hairline);
+    animation: fadein 0.28s ease both;
+  }
+  @keyframes fadein { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .item:last-child { border-bottom: none; }
+
+  .check {
+    flex-shrink: 0; width: 19px; height: 19px; margin-top: 3px; position: relative;
+    border: 1.5px solid #cdc9bc; border-radius: 50%;
+    background: transparent; transition: border-color 0.15s, background 0.2s;
+  }
+  .check:hover { border-color: var(--accent); }
+  .check svg { position: absolute; inset: 0; width: 19px; height: 19px; }
+  .chk-path { fill: none; stroke: #faf9f5; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 0.3s ease; }
+  .item.done .check { background: var(--fill); border-color: var(--fill); }
+  .item.done .chk-path { stroke-dashoffset: 0; }
+
+  .line { flex: 1; min-width: 0; padding-top: 0; }
+  .line-text { position: relative; display: inline; font-size: 15.5px; color: var(--text); word-break: break-word; }
+  .line-text a:hover { color: var(--accent); }
+  .line-text .num { color: var(--text-3); }
+  .line-text::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 54%; height: 1.5px; background: var(--text-3);
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s cubic-bezier(0.6,0,0.3,1);
+  }
+  .item.done .line-text::after { transform: scaleX(1); }
+  .item.done .line-text { color: var(--text-3); }
+  .item.done .line-text a:hover { color: var(--text-3); }
+
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; vertical-align: middle; position: relative; top: -1px; }
+  .dot.high { background: var(--accent); }
+  .dot.med { background: transparent; box-shadow: inset 0 0 0 1.4px var(--text-3); }
+  .kind { color: var(--text-3); font-size: 12.5px; font-weight: 500; margin-right: 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .note { display: block; font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .note.warn { color: var(--red); }
+  .item.done .note { color: var(--text-3); }
+
+  .del { flex-shrink: 0; color: var(--text-3); opacity: 0; padding: 2px; margin-top: 3px; transition: opacity 0.15s, color 0.15s; }
+  .item:hover .del { opacity: 1; }
+  .del:hover { color: var(--red); }
+  .del svg { width: 14px; height: 14px; }
+
+  .rowtools { display: flex; gap: 2px; flex-shrink: 0; }
+  .editbtn { color: var(--text-3); opacity: 0; padding: 2px; margin-top: 3px; transition: opacity 0.15s, color 0.15s; }
+  .item:hover .editbtn { opacity: 1; }
+  .editbtn:hover { color: var(--accent); }
+  .editbtn svg { width: 14px; height: 14px; }
+
+  /* gh item type chips */
+  .kchip { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; margin-right: 5px; letter-spacing: 0.04em; text-transform: uppercase; flex-shrink: 0; }
+  .kchip-review { background: #fef3c7; color: #92400e; }
+  .kchip-pr     { background: #dcfce7; color: #166534; }
+  .kchip-issue  { background: #dbeafe; color: #1e40af; }
+  .kchip-draft  { background: #f3f4f6; color: #6b7280; }
+
+  /* task status badges */
+  .sbadge { display: inline-flex; font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .sbadge-in-progress { background: #dbeafe; color: #1e40af; }
+  .sbadge-blocked     { background: #fee2e2; color: #991b1b; }
+  .sbadge-waiting     { background: #fef3c7; color: #92400e; }
+
+  /* note button on gh items */
+  .notebtn { flex-shrink: 0; color: var(--text-3); opacity: 0; padding: 2px; margin-top: 3px; transition: opacity 0.15s, color 0.15s; }
+  .notebtn.has-note { color: var(--accent); opacity: 1; }
+  .item:hover .notebtn { opacity: 1; }
+  .notebtn svg { width: 14px; height: 14px; }
+  .notebtn:hover { color: var(--accent); }
+
+  /* inline note editor for gh items */
+  .gh-note-area { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: 7px; }
+  .gh-note-area textarea { width: 100%; background: var(--bg); border: 1px solid var(--hairline-2); border-radius: 7px; padding: 8px 10px; font-size: 13.5px; color: var(--text); font-family: inherit; resize: none; transition: border-color 0.15s; line-height: 1.5; min-height: 60px; }
+  .gh-note-area textarea:focus { outline: none; border-color: var(--accent); }
+  .gh-note-area .note-row { display: flex; gap: 8px; align-items: center; }
+  .gh-note-area .note-row .clear { margin-left: auto; }
+
+  /* task meta: due, labels, notes */
+  .tasktext { cursor: text; }
+  .sub { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 4px; }
+  .due-tag { font-size: 13px; color: var(--text-3); }
+  .due-tag.warn { color: var(--red); }
+  .chip { font-size: 11.5px; font-weight: 500; padding: 1.5px 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; line-height: 1.55; }
+  .chip .x { font-size: 14px; line-height: 1; color: inherit; opacity: 0.5; padding: 0; }
+  .chip .x:hover { opacity: 1; }
+  .note-icon { display: inline-flex; color: var(--text-3); }
+  .note-icon svg { width: 13px; height: 13px; }
+
+  /* inline editor */
+  .item.editing { align-items: stretch; }
+  .editor { flex: 1; display: flex; flex-direction: column; gap: 9px; background: #f4f2ea; border: 1px solid var(--hairline-2); border-radius: 10px; padding: 12px; }
+  .editor input, .editor select, .editor textarea { background: var(--bg); border: 1px solid var(--hairline-2); border-radius: 7px; padding: 8px 10px; font-size: 14.5px; color: var(--text); transition: border-color 0.15s; }
+  .editor input:focus, .editor select:focus, .editor textarea:focus { outline: none; border-color: var(--accent); }
+  .ed-text { font-weight: 500; }
+  .ed-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ed-row select, .ed-row input { flex: 1; min-width: 130px; font-size: 13.5px; cursor: pointer; }
+  .ed-due { color-scheme: light; }
+  .ed-labels { display: flex; flex-direction: column; gap: 8px; }
+  .ed-labels .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .ed-label-input { max-width: 220px; font-size: 13.5px; }
+  .chips-empty { font-size: 13px; color: var(--text-3); }
+  .ed-notes { resize: none; min-height: 54px; line-height: 1.55; font-family: inherit; }
+  .editor-actions { display: flex; align-items: center; gap: 8px; }
+  .editor-actions .del-task { margin-left: auto; color: var(--red); }
+  .editor-actions .del-task:hover { background: #f6e7e5; border-color: #e6c9c6; }
+
+  /* add line */
+  .add { display: flex; align-items: center; gap: 13px; padding: 12px 0 4px; }
+  .add-plus { flex-shrink: 0; width: 19px; text-align: center; color: var(--text-3); font-size: 17px; line-height: 1; }
+  .add-input { flex: 1; background: transparent; border: none; font-size: 15.5px; padding: 2px 0; }
+  .add-input:focus { outline: none; }
+  .add-input::placeholder { color: var(--text-3); }
+  .add-prio, .add-date { background: transparent; border: none; color: var(--text-3); font-size: 13px; cursor: pointer; }
+  .add-prio:focus, .add-date:focus { outline: none; color: var(--text); }
+  .add-date { color-scheme: light; }
+
+  /* browse */
+  .browse { margin-top: 48px; }
+  .browse-title { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); margin-bottom: 6px; }
+  .sect summary { list-style: none; cursor: pointer; padding: 11px 0; display: flex; align-items: center; gap: 9px; font-size: 14.5px; border-bottom: 1px solid var(--hairline); user-select: none; color: var(--text); }
+  .sect summary::-webkit-details-marker { display: none; }
+  .sect summary:hover { color: var(--accent); }
+  .caret { color: var(--text-3); transition: transform 0.2s; font-size: 11px; }
+  .sect[open] .caret { transform: rotate(90deg); }
+  .s-count { margin-left: auto; color: var(--text-3); font-size: 13px; }
+  .sub-list { padding: 4px 0 12px 22px; }
+  .sub-row { padding: 6px 0; font-size: 14.5px; }
+  .sub-row a:hover { color: var(--accent); }
+  .sub-row .num { color: var(--text-3); }
+  .sub-row .r { display: block; font-size: 12.5px; color: var(--text-3); margin-top: 1px; }
+  .none { padding: 6px 0 12px 22px; color: var(--text-3); font-size: 13.5px; }
+
+  .footnote { margin-top: 44px; font-size: 12px; color: var(--text-3); line-height: 1.6; }
+
+  /* skeleton */
+  .sk { background: linear-gradient(90deg, #f0eee7 25%, #f6f4ee 50%, #f0eee7 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: 4px; height: 15px; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* setup */
+  .setup .greet { font-size: 22px; }
+  .lead { font-size: 15.5px; color: var(--text-2); margin-top: 8px; max-width: 46ch; }
+  .fill { margin: 34px 0 4px; }
+  .fill label { font-size: 12.5px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-2); display: block; margin-bottom: 10px; }
+  .fill-line { display: flex; border-bottom: 1.5px solid var(--hairline-2); padding-bottom: 9px; max-width: 440px; transition: border-color 0.15s; }
+  .fill-line:focus-within { border-color: var(--accent); }
+  .fill-line input { flex: 1; background: transparent; border: none; font-size: 15px; }
+  .fill-line input:focus { outline: none; }
+  .fill-line input::placeholder { color: var(--text-3); }
+  .setup-actions { display: flex; align-items: center; gap: 16px; margin-top: 22px; flex-wrap: wrap; }
+  .err { display: none; color: var(--red); font-size: 14px; margin-top: 14px; align-items: center; gap: 7px; }
+  .err.show { display: flex; }
+  .err svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .howto { margin-top: 52px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 14px; color: var(--text-2); max-width: 50ch; }
+  .howto h3 { font-size: 12.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 10px; }
+  .howto ol { margin-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+  .howto a { color: var(--accent); }
+  .howto code { background: #f0eee7; padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+  .howto .priv { margin-top: 16px; font-size: 12.5px; color: var(--text-3); display: flex; gap: 7px; }
+  .howto .priv svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 3px; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 520px) {
+    body { padding: 40px 18px 90px; }
+    .top { margin-bottom: 34px; }
+    .who span { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ SETUP ============ -->
+  <div class="setup" id="setup">
+    <div class="top"><div class="date" id="setupDate"></div></div>
+    <div class="greet">A quieter to-do list.</div>
+    <p class="lead">Connect GitHub and this page fills with the issues, PRs and reviews waiting on you — then tells you what to pick up first. Your own tasks live here too.</p>
+
+    <div class="fill">
+      <label for="tokenInput">GitHub personal access token</label>
+      <div class="fill-line"><input id="tokenInput" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off" spellcheck="false" /></div>
+    </div>
+
+    <div class="err" id="setupErr">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="setupErrText"></span>
+    </div>
+
+    <div class="setup-actions">
+      <button class="btn primary" id="connectBtn">Connect GitHub</button>
+      <a class="lnk" id="demoLink" href="#" style="color:var(--text-2)">or take a look around →</a>
+    </div>
+
+    <div class="howto">
+      <h3>Need a token?</h3>
+      <ol>
+        <li>Open <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">Settings → Developer settings → Fine-grained tokens</a>.</li>
+        <li>Give it <b>read access</b> to Issues, Pull requests &amp; Metadata (a classic token with <code>repo</code> works too).</li>
+        <li>Copy it and paste it above.</li>
+      </ol>
+      <div class="priv">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Stays in this browser, only ever talks to api.github.com. Nothing is uploaded.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ APP ============ -->
+  <div class="app hidden" id="app">
+    <div class="top">
+      <div class="date" id="dateBig"></div>
+      <div class="tools">
+        <a class="lnk" id="refreshLink" href="#" title="Refresh from GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M3.5 9a9 9 0 0114.9-3.4L23 10"/><path d="M1 20v-6h6"/><path d="M20.5 15A9 9 0 015.6 18.4L1 14"/></svg>
+          <span id="refreshText">refresh</span>
+        </a>
+        <span class="who" id="who"><img id="avatar" alt="" /><span id="uname"></span></span>
+        <a class="lnk" id="signout" href="#">sign out</a>
+      </div>
+    </div>
+
+    <div class="greet" id="greet"></div>
+    <p class="coach" id="coach"></p>
+
+    <div id="startWrap"></div>
+
+    <div class="h-list"><h2>Today</h2><span class="tally" id="tally"></span></div>
+    <div class="list" id="list"></div>
+
+    <div class="add">
+      <span class="add-plus">+</span>
+      <input class="add-input" id="addInput" placeholder="Add a task…" maxlength="160" />
+      <select class="add-prio" id="addPrio" title="priority">
+        <option value="high">high</option>
+        <option value="med" selected>medium</option>
+        <option value="low">low</option>
+      </select>
+      <input class="add-date" id="addDate" type="date" title="due date (optional)" />
+    </div>
+
+    <div class="browse" id="browse"></div>
+
+    <div class="footnote">Saved on this device. Ticking a GitHub line crosses it off here only — it doesn't change anything on GitHub.</div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================================
+   Today — a quiet list that tells you what to work on (client-only, PAT)
+   ========================================================================= */
+
+const store = (() => {
+  let ok = true;
+  try { const k='__t'; localStorage.setItem(k,'1'); localStorage.removeItem(k); } catch { ok = false; }
+  const mem = {};
+  return {
+    get: k => { try { return ok ? localStorage.getItem(k) : (mem[k] ?? null); } catch { return mem[k] ?? null; } },
+    set: (k,v) => { try { ok ? localStorage.setItem(k,v) : (mem[k]=v); } catch { mem[k]=v; } },
+    del: k => { try { ok ? localStorage.removeItem(k) : (delete mem[k]); } catch { delete mem[k]; } },
+  };
+})();
+
+const state = {
+  token: null, demo: false, user: null,
+  data: { review: [], assigned: [], created: [], involved: [] },
+  tasks: [], handled: new Set(), skipped: new Set(),
+  editingId: null, ghNoteEditingId: null,
+  ghNotes: {},
+  lastFetch: null, loading: false,
+};
+
+const BUCKETS = [
+  { key: 'assigned', label: 'Assigned to me', q: 'is:open is:issue assignee:@me' },
+  { key: 'review',   label: 'Waiting for my review', q: 'is:open is:pr review-requested:@me' },
+  { key: 'created',  label: 'Issues I opened', q: 'is:open is:issue author:@me' },
+  { key: 'involved', label: "Threads I'm in", q: 'is:open involves:@me' },
+];
+
+const $ = id => document.getElementById(id);
+
+/* ---------- GitHub API ---------- */
+async function gh(path) {
+  const res = await fetch('https://api.github.com' + path, {
+    headers: { Authorization: 'Bearer ' + state.token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+  });
+  if (res.status === 401) throw new Error('AUTH');
+  if (res.status === 403) { if (res.headers.get('x-ratelimit-remaining') === '0') throw new Error('RATE'); throw new Error('FORBIDDEN'); }
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+const search = q => gh('/search/issues?per_page=40&sort=updated&order=desc&q=' + encodeURIComponent(q));
+async function validateToken(token) { const prev = state.token; state.token = token; try { return await gh('/user'); } catch (e) { state.token = prev; throw e; } }
+
+/* ---------- connect ---------- */
+async function connect(token) {
+  const btn = $('connectBtn'); hideErr(); btn.disabled = true; const html = btn.textContent; btn.textContent = 'Connecting…';
+  try {
+    const user = await validateToken(token.trim());
+    state.token = token.trim(); state.demo = false; state.user = user;
+    store.set('t_token', state.token); loadLocal(); enterApp(); await refresh();
+  } catch (e) { showErr(errMsg(e)); btn.disabled = false; btn.textContent = html; }
+}
+function errMsg(e) {
+  if (e.message === 'AUTH') return "That token was turned away — check its scopes and that it hasn't expired.";
+  if (e.message === 'RATE') return 'GitHub rate limit hit. Give it a minute.';
+  if (e.message === 'FORBIDDEN') return 'The token is missing a permission it needs.';
+  if (/Failed to fetch|NetworkError/i.test(e.message)) return "Couldn't reach GitHub. Check your connection.";
+  return 'Something went wrong — ' + e.message;
+}
+function showErr(m) { $('setupErrText').textContent = m; $('setupErr').classList.add('show'); }
+function hideErr() { $('setupErr').classList.remove('show'); }
+
+function enterApp() {
+  $('setup').classList.add('hidden'); $('app').classList.remove('hidden');
+  const now = new Date();
+  $('dateBig').innerHTML = now.toLocaleDateString(undefined, { weekday: 'long' }) + '<small>' + now.toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) + '</small>';
+  if (state.user) { $('avatar').src = state.user.avatar_url || ''; $('uname').textContent = state.user.login || 'you'; }
+  renderAll();
+}
+function disconnect() {
+  store.del('t_token');
+  state.token = null; state.user = null; state.demo = false;
+  state.data = { review: [], assigned: [], created: [], involved: [] };
+  state.handled = new Set(); state.skipped = new Set();
+  $('app').classList.add('hidden'); $('setup').classList.remove('hidden');
+  $('tokenInput').value = ''; $('connectBtn').disabled = false; hideErr();
+}
+
+/* ---------- refresh ---------- */
+async function refresh() {
+  if (state.demo || !state.token || state.loading) return;
+  state.loading = true; $('refreshLink').classList.add('refreshing'); $('refreshText').textContent = 'refreshing…';
+  renderSkeleton();
+  const results = await Promise.allSettled(BUCKETS.map(b => search(b.q)));
+  let authFailed = false;
+  results.forEach((r, i) => { if (r.status === 'fulfilled') state.data[BUCKETS[i].key] = r.value.items || []; else if (r.reason && r.reason.message === 'AUTH') authFailed = true; });
+  state.loading = false; $('refreshLink').classList.remove('refreshing'); $('refreshText').textContent = 'refresh';
+  if (authFailed) { disconnect(); showErr('Your token expired or was revoked. Reconnect to keep going.'); return; }
+  const live = new Set(); Object.values(state.data).forEach(a => a.forEach(i => live.add(i.id)));
+  state.handled = new Set([...state.handled].filter(id => live.has(id))); saveHandled();
+  state.lastFetch = new Date(); renderAll();
+}
+
+/* ---------- scoring ---------- */
+const HOT = ['bug','critical','urgent','security','p0','p1','high priority','high-priority','blocker','regression'];
+const isHotLabel = n => HOT.some(h => n.toLowerCase().includes(h));
+const hasHot = it => (it.labels || []).some(l => isHotLabel(l.name));
+
+function scoreItem(it, s) {
+  let x = 0;
+  if (s.has('review')) x += 65;
+  if (s.has('assigned')) x += 45;
+  if (s.has('created') && !s.has('assigned')) x += 18;
+  if (s.has('involved') && s.size === 1) x += 12;
+  if (hasHot(it)) x += 25;
+  if ((it.comments || 0) >= 5) x += 6;
+  if (it.pull_request && !it.draft) x += 8;
+  if (it.draft) x -= 10;
+  const age = (Date.now() - new Date(it.created_at)) / 86400000;
+  if (!it.pull_request && age > 21 && (s.has('assigned') || s.has('created'))) x += 10;
+  if ((Date.now() - new Date(it.updated_at)) / 86400000 < 2) x += 4;
+  return x;
+}
+function scoreTask(t) {
+  let x = t.prio === 'high' ? 55 : t.prio === 'med' ? 30 : 12;
+  if (t.due) { const d = Math.ceil((new Date(t.due+'T23:59:59') - Date.now())/86400000); if (d<0) x+=40; else if (d===0) x+=30; else if (d<=2) x+=18; }
+  return x;
+}
+function buildEntries() {
+  const map = new Map();
+  ['review','assigned','created','involved'].forEach(key => (state.data[key]||[]).forEach(it => {
+    const ex = map.get(it.id); if (ex) ex.sources.add(key); else map.set(it.id, { item: it, sources: new Set([key]) });
+  }));
+  const gh = [...map.values()].map(({ item, sources }) => ({ type:'gh', id:'gh-'+item.id, item, sources, score: scoreItem(item, sources), done: state.handled.has(item.id) }));
+  const tasks = state.tasks.map(t => ({ type:'task', id:t.id, task:t, score: scoreTask(t), done: t.done }));
+  const actionable = [...gh, ...tasks].filter(e => e.type === 'task' ? true : (e.sources.has('review') || e.sources.has('assigned') || hasHot(e.item)));
+  actionable.sort((a,b) => (a.done - b.done) || (b.score - a.score));
+  return actionable;
+}
+function phrase(e) {
+  if (e.type === 'task') { const t=e.task, over=t.due && Math.ceil((new Date(t.due+'T23:59:59')-Date.now())/86400000)<0; return { verb: over?'Finish':'Do', text:t.text, isTask:true }; }
+  const s=e.sources, it=e.item; let verb='Look at';
+  if (s.has('review')) verb='Review'; else if (hasHot(it)) verb='Fix'; else if (s.has('assigned')) verb='Work on'; else if (s.has('created')) verb='Check on';
+  return { verb, text: it.title, isTask:false };
+}
+function reasonFor(e) {
+  if (e.type === 'task') { const t=e.task, p=[]; if (t.prio==='high') p.push('marked important'); if (t.due){ const d=Math.ceil((new Date(t.due+'T23:59:59')-Date.now())/86400000); if(d<0)p.push('overdue'); else if(d===0)p.push('due today'); else if(d<=2)p.push('due in '+d+' day'+(d>1?'s':'')); } return p.join(' · '); }
+  const it=e.item, s=e.sources, p=[];
+  if (s.has('review')) p.push("someone's waiting on your review");
+  const hl=(it.labels||[]).find(l=>isHotLabel(l.name)); if (hl) p.push('labelled '+hl.name);
+  const age=Math.round((Date.now()-new Date(it.created_at))/86400000);
+  if (!it.pull_request && age>21 && (s.has('assigned')||s.has('created'))) p.push('open '+age+' days');
+  if (!p.length && s.has('assigned')) p.push('assigned to you');
+  if ((it.comments||0)>=5) p.push(it.comments+' comments');
+  return p.slice(0,2).join(' · ');
+}
+
+/* ---------- render ---------- */
+function renderAll() { renderCoach(); renderStart(); renderList(); renderBrowse(); renderTally(); }
+
+function renderCoach() {
+  const d = state.data;
+  const reviews = d.review.length;
+  const hotBugs = new Set([...d.assigned, ...d.involved].filter(hasHot).map(i=>i.id)).size;
+  const overdue = state.tasks.filter(t => !t.done && t.due && (new Date(t.due+'T23:59:59') - Date.now()) < 0).length;
+  const assigned = d.assigned.length;
+  const openTasks = state.tasks.filter(t => !t.done).length;
+  const h = new Date().getHours();
+  const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  $('greet').textContent = part + (state.user ? ', ' + state.user.login : '') + '.';
+  let m;
+  if (reviews>0) m = `<b>${reviews} pull request${reviews>1?'s':''}</b> ${reviews>1?'are':'is'} waiting on your review — those unblock other people, so start there.`;
+  else if (hotBugs>0) m = `There ${hotBugs>1?'are':'is'} <b>${hotBugs} bug${hotBugs>1?'s':''}</b> that need${hotBugs>1?'':'s'} you. Take the top one first.`;
+  else if (overdue>0) m = `<b>${overdue} task${overdue>1?'s':''}</b> slipped past due — clear ${overdue>1?'those':'that'} before anything new.`;
+  else if (assigned>0) m = `You have <b>${assigned} issue${assigned>1?'s':''}</b> assigned. Take the one at the top and go.`;
+  else if (openTasks>0) m = `Nothing urgent from GitHub — work through your <b>${openTasks} task${openTasks>1?'s':''}</b> below.`;
+  else m = `Your page is clear. Add something to work on, or enjoy the quiet.`;
+  $('coach').innerHTML = m;
+}
+
+function renderStart() {
+  const entries = buildEntries();
+  const next = entries.find(e => !e.done && !state.skipped.has(e.id));
+  const wrap = $('startWrap');
+  if (!next) {
+    const anyOpen = entries.some(e => !e.done);
+    wrap.innerHTML = `<div class="all-clear">${ICON.check}<span>${anyOpen ? "That's all you skipped — nothing else calling for you." : "Everything's crossed off. Nice work."}</span></div>`;
+    return;
+  }
+  const p = phrase(next), reason = reasonFor(next);
+  const title = p.isTask
+    ? `${p.verb} — ${esc(p.text)}`
+    : `${p.verb}: <a href="${next.item.html_url}" target="_blank" rel="noopener">${esc(p.text)}</a> <span class="num">#${next.item.number}</span>`;
+  const open = p.isTask ? '' : `<a class="btn" href="${next.item.html_url}" target="_blank" rel="noopener">Open on GitHub ↗</a>`;
+  wrap.innerHTML = `
+    <div class="starthere">
+      <div class="sh-label">Start here</div>
+      <div class="sh-title">${title}</div>
+      ${reason ? `<div class="sh-reason">${esc(reason)}</div>` : ''}
+      <div class="sh-actions">
+        ${open}
+        <button class="btn primary" data-act="done" data-id="${next.id}">Done</button>
+        <button class="btn ghost" data-act="skip" data-id="${next.id}">skip →</button>
+      </div>
+    </div>`;
+  wrap.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.act === 'done') markDone(b.dataset.id);
+    else { state.skipped.add(b.dataset.id); renderStart(); }
+  }));
+}
+
+function renderList() {
+  const entries = buildEntries();
+  const el = $('list');
+  if (!entries.length) { el.innerHTML = `<div class="note" style="padding:8px 0">Nothing here yet — connect GitHub or add a task below.</div>`; return; }
+  el.innerHTML = entries.map(e => {
+    if (e.type === 'task' && e.id === state.editingId) return editorHTML(e.task);
+    let text, sub = '', noteLine = '';
+    if (e.type === 'task') {
+      const t = e.task;
+      const dot = t.prio === 'high' ? '<span class="dot high"></span>' : t.prio === 'med' ? '<span class="dot med"></span>' : '';
+      text = `<span class="line-text tasktext" data-edit="${e.id}" title="Click to edit">${dot}${esc(t.text)}</span>`;
+      const parts = [];
+      if (t.status && t.status !== 'todo') {
+        const sLabel = t.status === 'in-progress' ? 'In Progress' : t.status.charAt(0).toUpperCase() + t.status.slice(1);
+        parts.push(`<span class="sbadge sbadge-${t.status}">${sLabel}</span>`);
+      }
+      if (t.due) {
+        const d = Math.ceil((new Date(t.due+'T23:59:59') - Date.now())/86400000);
+        const over = !t.done && d < 0, today = !t.done && d === 0;
+        parts.push(`<span class="due-tag ${over||today?'warn':''}">${over?'overdue':today?'due today':'due '+fmtDate(t.due)}</span>`);
+      }
+      (t.labels || []).forEach(l => { const c = labelColor(l); parts.push(`<span class="chip" style="background:${c.bg};color:${c.fg}">${esc(l)}</span>`); });
+      sub = parts.length ? `<div class="sub">${parts.join('')}</div>` : '';
+      if (t.notes && t.notes.trim()) {
+        const preview = t.notes.trim().replace(/\n/g, ' ').slice(0, 90);
+        noteLine = `<span class="note">${esc(preview)}${t.notes.trim().length > 90 ? '…' : ''}</span>`;
+      }
+    } else {
+      const it = e.item;
+      let kCls, kLabel;
+      if (it.pull_request) {
+        if (it.draft) { kCls = 'kchip-draft'; kLabel = 'Draft'; }
+        else if (e.sources.has('review')) { kCls = 'kchip-review'; kLabel = 'Review'; }
+        else { kCls = 'kchip-pr'; kLabel = 'PR'; }
+      } else { kCls = 'kchip-issue'; kLabel = 'Issue'; }
+      text = `<span class="line-text"><span class="kchip ${kCls}">${kLabel}</span><a href="${it.html_url}" target="_blank" rel="noopener">${esc(it.title)}</a> <span class="num">#${it.number}</span></span>`;
+      const r = reasonFor(e);
+      sub = `<div class="sub"><span class="due-tag">${esc(repoOf(it))}${r ? ' — ' + esc(r) : ''}</span></div>`;
+      const ghNote = state.ghNotes[e.id] || '';
+      if (e.id === state.ghNoteEditingId) {
+        noteLine = `<div class="gh-note-area"><textarea placeholder="Add a personal note…" rows="2">${esc(ghNote)}</textarea><div class="note-row"><button class="btn" data-note-save="${e.id}">Save</button>${ghNote ? `<button class="btn ghost clear" data-note-clear="${e.id}">Clear</button>` : ''}<button class="btn ghost" data-note-cancel>Cancel</button></div></div>`;
+      } else if (ghNote) {
+        noteLine = `<span class="note">${esc(ghNote.replace(/\n/g, ' ').slice(0, 90))}${ghNote.length > 90 ? '…' : ''}</span>`;
+      }
+    }
+    const tools = e.type === 'task'
+      ? `<div class="rowtools"><button class="editbtn" data-edit="${e.id}" title="Edit">${ICON.edit}</button><button class="del" data-del="${e.id}" title="Remove">${ICON.x}</button></div>`
+      : `<div class="rowtools"><button class="notebtn${(state.ghNotes[e.id] || e.id === state.ghNoteEditingId) ? ' has-note' : ''}" data-note-toggle="${e.id}" title="${state.ghNotes[e.id] ? 'Edit note' : 'Add note'}">${ICON.note}</button></div>`;
+    return `<div class="item ${e.done ? 'done' : ''}">
+      <button class="check" data-id="${e.id}" title="cross off"><svg viewBox="0 0 19 19"><path class="chk-path" d="M4.5 9.8 L8 13 L14.5 5.5"/></svg></button>
+      <div class="line">${text}${sub}${noteLine}</div>
+      ${tools}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.check').forEach(b => b.addEventListener('click', () => toggle(b.dataset.id)));
+  el.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => deleteTask(b.dataset.del)));
+  el.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEditor(b.dataset.edit)));
+  el.querySelectorAll('[data-note-toggle]').forEach(b => b.addEventListener('click', () => {
+    state.ghNoteEditingId = state.ghNoteEditingId === b.dataset.noteToggle ? null : b.dataset.noteToggle;
+    renderList();
+  }));
+  el.querySelectorAll('[data-note-save]').forEach(b => b.addEventListener('click', () => {
+    const ta = b.closest('.gh-note-area').querySelector('textarea');
+    const val = ta.value.trim();
+    if (val) state.ghNotes[b.dataset.noteSave] = val; else delete state.ghNotes[b.dataset.noteSave];
+    state.ghNoteEditingId = null; saveGhNotes(); renderList();
+  }));
+  el.querySelectorAll('[data-note-clear]').forEach(b => b.addEventListener('click', () => {
+    delete state.ghNotes[b.dataset.noteClear];
+    state.ghNoteEditingId = null; saveGhNotes(); renderList();
+  }));
+  el.querySelectorAll('[data-note-cancel]').forEach(b => b.addEventListener('click', () => { state.ghNoteEditingId = null; renderList(); }));
+  if (state.editingId) wireEditor();
+}
+
+/* ---------- inline task editor ---------- */
+function editorHTML(t) {
+  const st = t.status || 'todo';
+  return `<div class="item editing">
+    <div class="editor">
+      <input class="ed-text" value="${esc(t.text)}" placeholder="What needs doing?" />
+      <div class="ed-row">
+        <select class="ed-status">
+          <option value="todo"${st==='todo'?' selected':''}>To do</option>
+          <option value="in-progress"${st==='in-progress'?' selected':''}>In progress</option>
+          <option value="blocked"${st==='blocked'?' selected':''}>Blocked</option>
+          <option value="waiting"${st==='waiting'?' selected':''}>Waiting</option>
+        </select>
+        <select class="ed-prio">
+          <option value="high"${t.prio==='high'?' selected':''}>High priority</option>
+          <option value="med"${t.prio==='med'?' selected':''}>Medium priority</option>
+          <option value="low"${t.prio==='low'?' selected':''}>Low priority</option>
+        </select>
+        <input class="ed-due" type="date" value="${t.due||''}" title="Due date" />
+      </div>
+      <div class="ed-labels">
+        <div class="chips" id="edChips"></div>
+        <input class="ed-label-input" placeholder="Add label + Enter" maxlength="24" />
+      </div>
+      <textarea class="ed-notes" placeholder="Notes…">${esc(t.notes||'')}</textarea>
+      <div class="editor-actions">
+        <button class="btn primary" data-save>Done</button>
+        <button class="btn del-task" data-del-task>Delete task</button>
+      </div>
+    </div>
+  </div>`;
+}
+function openEditor(id) { state.editingId = id; renderList(); }
+function closeEditor() { state.editingId = null; renderAll(); }
+function wireEditor() {
+  const t = state.tasks.find(x => x.id === state.editingId); if (!t) return;
+  const root = $('list').querySelector('.item.editing'); if (!root) return;
+  const text = root.querySelector('.ed-text');
+  const notes = root.querySelector('.ed-notes');
+  const labelInput = root.querySelector('.ed-label-input');
+  text.addEventListener('input', () => { t.text = text.value; saveTasks(); });
+  text.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeEditor(); } else if (e.key === 'Escape') closeEditor(); });
+  root.querySelector('.ed-status').addEventListener('change', e => { t.status = e.target.value; saveTasks(); });
+  root.querySelector('.ed-prio').addEventListener('change', e => { t.prio = e.target.value; saveTasks(); });
+  root.querySelector('.ed-due').addEventListener('change', e => { t.due = e.target.value || null; saveTasks(); });
+  notes.addEventListener('input', () => { t.notes = notes.value; saveTasks(); autoGrow(notes); });
+  labelInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const v = labelInput.value.trim();
+      if (v) { t.labels = t.labels || []; if (!t.labels.includes(v)) { t.labels.push(v); saveTasks(); renderChips(root, t); } }
+      labelInput.value = '';
+    } else if (e.key === 'Backspace' && !labelInput.value && (t.labels || []).length) {
+      t.labels.pop(); saveTasks(); renderChips(root, t);
+    }
+  });
+  root.querySelector('[data-save]').addEventListener('click', closeEditor);
+  root.querySelector('[data-del-task]').addEventListener('click', () => deleteTask(state.editingId));
+  renderChips(root, t);
+  autoGrow(notes);
+  text.focus(); text.setSelectionRange(text.value.length, text.value.length);
+}
+function renderChips(root, t) {
+  const c = root.querySelector('#edChips');
+  const labels = t.labels || [];
+  c.innerHTML = labels.length
+    ? labels.map((l, i) => { const col = labelColor(l); return `<span class="chip" style="background:${col.bg};color:${col.fg}">${esc(l)}<button class="x" data-rm="${i}" title="Remove">×</button></span>`; }).join('')
+    : `<span class="chips-empty">No labels yet</span>`;
+  c.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => { t.labels.splice(Number(b.dataset.rm), 1); saveTasks(); renderChips(root, t); }));
+}
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 240) + 'px'; }
+
+function renderBrowse() {
+  const el = $('browse');
+  const total = Object.values(state.data).reduce((n,a)=>n+a.length,0);
+  if (!total) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="browse-title">All from GitHub</div>` + BUCKETS.map(b => {
+    const items = state.data[b.key] || [];
+    const rows = items.length
+      ? `<div class="sub-list">` + items.map(it => `<div class="sub-row"><a href="${it.html_url}" target="_blank" rel="noopener">${esc(it.title)}</a> <span class="num">#${it.number}</span><span class="r">${esc(repoOf(it))} · updated ${timeAgo(it.updated_at)}</span></div>`).join('') + `</div>`
+      : `<div class="none">nothing here</div>`;
+    return `<details class="sect"><summary><span class="caret">›</span> ${b.label} <span class="s-count">${items.length}</span></summary>${rows}</details>`;
+  }).join('');
+}
+
+function renderTally() {
+  const e = buildEntries(); const done = e.filter(x=>x.done).length, total = e.length;
+  $('tally').textContent = total ? `${total-done} to go${done?' · '+done+' done':''}` : '';
+}
+function renderSkeleton() {
+  $('startWrap').innerHTML = `<div class="starthere"><div class="sh-label">Start here</div><div class="sk" style="width:65%;height:18px;margin-top:4px"></div></div>`;
+  $('list').innerHTML = Array(5).fill(0).map((_,i)=>`<div class="item"><div class="check"></div><div class="line"><div class="sk" style="width:${72-i*8}%"></div></div></div>`).join('');
+}
+
+/* ---------- actions ---------- */
+function toggle(id) {
+  if (id.startsWith('gh-')) { const g = Number(id.slice(3)); state.handled.has(g) ? state.handled.delete(g) : state.handled.add(g); saveHandled(); }
+  else { const t = state.tasks.find(t=>t.id===id); if (t) t.done = !t.done; saveTasks(); }
+  renderAll();
+}
+function markDone(id) {
+  if (id.startsWith('gh-')) state.handled.add(Number(id.slice(3)));
+  else { const t = state.tasks.find(t=>t.id===id); if (t) t.done = true; }
+  state.skipped.delete(id); saveHandled(); saveTasks(); renderAll();
+}
+function addTask() {
+  const inp = $('addInput'); const text = inp.value.trim(); if (!text) return;
+  state.tasks.unshift({ id:'task-'+genId(), text, prio: $('addPrio').value, due: $('addDate').value || null, labels: [], notes: '', status: 'todo', done:false, created: nowISO() });
+  inp.value = ''; $('addDate').value = ''; saveTasks(); renderAll();
+}
+function deleteTask(id) { state.tasks = state.tasks.filter(t=>t.id!==id); if (state.editingId === id) state.editingId = null; saveTasks(); renderAll(); }
+
+/* ---------- persistence ---------- */
+function loadLocal() {
+  try { state.tasks = JSON.parse(store.get('t_tasks') || '[]'); } catch { state.tasks = []; }
+  try { state.handled = new Set(JSON.parse(store.get('t_handled') || '[]')); } catch { state.handled = new Set(); }
+  try { state.ghNotes = JSON.parse(store.get('t_ghnotes') || '{}'); } catch { state.ghNotes = {}; }
+}
+function saveTasks() { store.set('t_tasks', JSON.stringify(state.tasks)); }
+function saveHandled() { store.set('t_handled', JSON.stringify([...state.handled])); }
+function saveGhNotes() { store.set('t_ghnotes', JSON.stringify(state.ghNotes)); }
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function repoOf(it){ const m=(it.repository_url||'').match(/repos\/(.+)$/); return m?m[1]:''; }
+function nowISO(){ try { return new Date().toISOString(); } catch { return ''; } }
+let _id=0; function genId(){ _id++; return Date.now().toString(36)+'-'+_id.toString(36); }
+function timeAgo(iso){ const s=Math.max(0,(Date.now()-new Date(iso))/1000); if(s<60)return'just now'; const m=s/60; if(m<60)return Math.floor(m)+'m ago'; const h=m/60; if(h<24)return Math.floor(h)+'h ago'; const d=h/24; if(d<30)return Math.floor(d)+'d ago'; const mo=d/30; if(mo<12)return Math.floor(mo)+'mo ago'; return Math.floor(mo/12)+'y ago'; }
+function fmtDate(d){ try { return new Date(d+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}); } catch { return d; } }
+
+const ICON = {
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+  note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="13" y2="17"/></svg>',
+};
+
+/* consistent muted colour per label name */
+const LABEL_COLORS = [
+  { bg:'#ece5f6', fg:'#6d54a3' }, { bg:'#e0ebf5', fg:'#3f6b96' }, { bg:'#e2efe1', fg:'#4a7c4e' },
+  { bg:'#f5ecd9', fg:'#957321' }, { bg:'#f4e4dd', fg:'#b4643c' }, { bg:'#dcefec', fg:'#3f8078' },
+  { bg:'#f6e2ea', fg:'#a34d72' }, { bg:'#e8e6de', fg:'#6f6b62' },
+];
+function labelColor(name) { let h = 0; for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return LABEL_COLORS[h % LABEL_COLORS.length]; }
+
+/* ---------- demo ---------- */
+function loadDemo() {
+  state.demo = true; state.token = null;
+  state.user = { login: 'octodev', avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4' };
+  const now = Date.now(), iso = d => new Date(now - d*86400000).toISOString(), repo = r => 'https://api.github.com/repos/'+r;
+  state.data.review = [
+    { id:1, number:482, title:"Refactor auth middleware to support refresh tokens", html_url:'https://github.com', repository_url:repo('acme/api-gateway'), pull_request:{}, draft:false, comments:4, labels:[{name:'needs-review',color:'8250df'}], created_at:iso(1), updated_at:iso(0.2) },
+    { id:2, number:91, title:"Fix flaky checkout test on CI", html_url:'https://github.com', repository_url:repo('acme/storefront'), pull_request:{}, draft:false, comments:2, labels:[{name:'bug',color:'d73a4a'}], created_at:iso(2), updated_at:iso(1) },
+  ];
+  state.data.assigned = [
+    { id:3, number:1204, title:"Dashboard charts render blank on Safari 17", html_url:'https://github.com', repository_url:repo('acme/storefront'), draft:false, comments:7, labels:[{name:'bug',color:'d73a4a'},{name:'high priority',color:'b60205'}], created_at:iso(26), updated_at:iso(0.5) },
+    { id:4, number:1188, title:"Add pagination to the notifications API", html_url:'https://github.com', repository_url:repo('acme/api-gateway'), draft:false, comments:1, labels:[{name:'enhancement',color:'a2eeef'}], created_at:iso(9), updated_at:iso(3) },
+    { id:5, number:77, title:"Write onboarding docs for the SDK", html_url:'https://github.com', repository_url:repo('acme/docs'), draft:false, comments:0, labels:[{name:'documentation',color:'0075ca'}], created_at:iso(40), updated_at:iso(12) },
+  ];
+  state.data.created = [
+    { id:6, number:1210, title:"Proposal: unify design tokens across web + mobile", html_url:'https://github.com', repository_url:repo('acme/design-system'), draft:false, comments:12, labels:[{name:'discussion',color:'d4c5f9'}], created_at:iso(5), updated_at:iso(0.3) },
+    { id:7, number:1150, title:"Env var DATABASE_URL not documented", html_url:'https://github.com', repository_url:repo('acme/api-gateway'), draft:false, comments:3, labels:[{name:'documentation',color:'0075ca'}], created_at:iso(18), updated_at:iso(6) },
+  ];
+  state.data.involved = [
+    ...state.data.review, state.data.assigned[0],
+    { id:8, number:1199, title:"Rate limiting returns 500 instead of 429", html_url:'https://github.com', repository_url:repo('acme/api-gateway'), draft:false, comments:9, labels:[{name:'bug',color:'d73a4a'},{name:'p1',color:'b60205'}], created_at:iso(3), updated_at:iso(0.1) },
+    { id:9, number:63, title:"Dark mode flashes white on first paint", html_url:'https://github.com', repository_url:repo('acme/storefront'), draft:false, comments:5, labels:[], created_at:iso(14), updated_at:iso(4) },
+  ];
+  loadLocal();
+  if (!state.tasks.length) state.tasks = [
+    { id:'task-d1', text:'Prep demo for Thursday stakeholder review', prio:'high', due:new Date(now+86400000).toISOString().slice(0,10), labels:['launch','deck'], notes:'Slides + a live walkthrough. Double-check the staging data is seeded and the login works.', status:'in-progress', done:false, created:iso(1) },
+    { id:'task-d2', text:'Reply to design feedback in Figma', prio:'med', due:null, labels:['design'], notes:'', status:'waiting', done:false, created:iso(0.5) },
+    { id:'task-d3', text:'Cancel the unused staging database', prio:'low', due:null, labels:['ops','cleanup'], notes:'', status:'todo', done:true, created:iso(2) },
+  ];
+  if (!Object.keys(state.ghNotes).length) {
+    state.ghNotes['gh-1'] = 'Left a comment yesterday — waiting on the author to address the refresh token edge case.';
+    state.ghNotes['gh-3'] = 'Reproduced on Safari 17.4. The chart SVG renderer is the culprit.';
+  }
+  state.lastFetch = new Date(); enterApp();
+}
+
+/* ---------- wire up ---------- */
+$('connectBtn').addEventListener('click', () => { const t=$('tokenInput').value; if(!t.trim()){ showErr('Paste a token first, or take the tour.'); return; } connect(t); });
+$('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('connectBtn').click(); });
+$('demoLink').addEventListener('click', e => { e.preventDefault(); loadDemo(); });
+$('refreshLink').addEventListener('click', e => { e.preventDefault(); if (!state.demo) refresh(); });
+$('signout').addEventListener('click', e => { e.preventDefault(); disconnect(); });
+$('addInput').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+$('setupDate').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+
+(function boot(){
+  const saved = store.get('t_token'); if (!saved) return;
+  state.token = saved;
+  validateToken(saved).then(u => { state.user = u; loadLocal(); enterApp(); refresh(); }).catch(() => { store.del('t_token'); state.token = null; });
+})();
+</script>
+</body>
+</html>
